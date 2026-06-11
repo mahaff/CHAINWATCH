@@ -4,7 +4,7 @@ AI-powered supply chain disruption intelligence agent for the Google Cloud Agent
 
 Public source repository: [https://github.com/mahaff/CHAINWATCH](https://github.com/mahaff/CHAINWATCH)
 
-Hosted demo URL: add your live Cloud Run URL here for judges
+Hosted demo URL: (https://adk-default-service-name-785174646760.us-central1.run.app/dev-ui/?app=chainwatch&userId=user)
 
 ---
 
