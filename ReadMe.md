@@ -1,31 +1,60 @@
 # CHAINWATCH
 
-AI-powered supply chain disruption intelligence agent. Built for the Google Cloud Agent Builder Hackathon, MongoDB track, Financial Services / Retail theme.
+AI-powered supply chain disruption intelligence agent for the Google Cloud Agent Builder Hackathon, MongoDB track.
+
+Public source repository: [https://github.com/mahaff/CHAINWATCH](https://github.com/mahaff/CHAINWATCH)
+
+Hosted demo URL: add your live Cloud Run URL here for judges
 
 ---
 
-## What it does
+## Judge Summary
 
-Supply chain managers deal with a constant stream of disruptions — port closures, price spikes, factory shutdowns, geopolitical events. The typical response is slow: someone notices a problem, pulls data from three different systems, figures out which products are affected, finds alternative suppliers, drafts a plan, and sends it up the chain. That process takes hours.
+If you are reviewing this project for the hackathon, start here.
 
-CHAINWATCH compresses it to seconds.
+CHAINWATCH takes a natural-language disruption report and turns it into an action-ready mitigation plan. It reads live MongoDB Atlas data through the MongoDB MCP server, reasons with Gemini 2.5 Flash through Google ADK, identifies impacted SKUs and backup suppliers, calculates cost deltas, and writes the final mitigation plan back to the database for human review.
 
-You describe the situation in plain language. The agent queries your live MongoDB data, figures out which SKUs are at risk and how badly, identifies the best backup suppliers with exact cost deltas, and writes a complete mitigation plan back to the database — ready for human review.
+### Why it stands out
 
-It does not summarize. It does not suggest you "look into" something. It does the analysis and gives you a decision-ready output.
+- Uses the required Google stack at runtime, not just in the README
+- Queries real operational data through MongoDB MCP
+- Produces a written mitigation plan, not just a summary
+- Designed for a live Cloud Run deployment with a public URL
+- Includes an OSI-approved MIT license
+
+### What judges should try
+
+1. "Run a full disruption analysis. Scan all active disruptions, identify affected SKUs, score risk levels, find backup suppliers with cost deltas, and save a mitigation plan."
+2. "Which SKUs are at critical or high risk right now?"
+3. "What is the cost impact if we switch all affected SKUs to backup suppliers today?"
+4. "Draft a mitigation plan for the highest-severity disruption."
 
 ---
 
-## How it works
+## What It Does
 
-The agent runs a six-step pipeline on every analysis request:
+Supply chain managers often need to combine disruption alerts, inventory risk, supplier alternatives, and cost impact before they can act. CHAINWATCH compresses that workflow into a single prompt.
 
-1. Scans the `disruptions` collection for active or high-severity events
-2. Cross-references affected supplier IDs against the `inventory` collection to find impacted SKUs
-3. Scores each SKU as CRITICAL, HIGH, or MEDIUM based on stock levels and disruption severity
-4. Queries the `suppliers` collection to find backup options, comparing reliability, lead time, and unit cost
-5. Drafts a structured mitigation plan with per-SKU recommendations and total monthly cost delta
-6. Inserts the completed plan into the `mitigation_plans` collection
+It:
+
+- scans active disruptions
+- maps affected suppliers to impacted SKUs
+- ranks risk as CRITICAL, HIGH, or MEDIUM
+- finds backup suppliers and compares lead time, reliability, and cost
+- writes the mitigation plan back to MongoDB
+
+---
+
+## Required Tech Used at Runtime
+
+This project uses the required stack in code:
+
+- Google ADK via `google.adk`
+- Gemini via `google.genai` with `gemini-2.5-flash`
+- MongoDB MCP via `McpToolset` and `StdioServerParameters`
+- Google Cloud Run for deployment
+
+The main agent lives in [chainwatch/agent.py](chainwatch/agent.py).
 
 ---
 
@@ -33,59 +62,88 @@ The agent runs a six-step pipeline on every analysis request:
 
 | Layer | Technology |
 |---|---|
-| Agent framework | Google ADK v1.34 |
+| Agent framework | Google ADK |
 | Model | Gemini 2.5 Flash |
 | Database | MongoDB Atlas M0 |
-| Data access | MongoDB MCP Server (stdio) |
+| Data access | MongoDB MCP Server over stdio |
 | Deployment | Google Cloud Run |
 | Language | Python 3.12 |
 
 ---
 
-## Project structure
+## How It Works
 
-```
-chainwatch-agent/
-├── chainwatch/
-│   ├── __init__.py
-│   └── agent.py          # Agent definition, system prompt, MCP toolset
-├── .env                  # Secrets — never committed
-├── .gitignore
-└── requirements.txt
+The agent runs a 6-step pipeline when asked to analyze a disruption:
+
+1. Scan the `disruptions` collection for active or high-severity events.
+2. Cross-reference affected supplier IDs against the `inventory` collection.
+3. Score each SKU by urgency based on stock and disruption severity.
+4. Search the `suppliers` collection for backup options.
+5. Draft a structured mitigation plan with cost deltas and recommended actions.
+6. Insert the completed plan into `mitigation_plans`.
+
+---
+
+## Project Structure
+
+```text
+chainwatch/
+  __init__.py
+  agent.py          # Agent definition, system prompt, MCP toolset
+.env                # Secrets, never commit this file
+.gitignore
+LICENSE
+ReadMe.md
+requirements.txt
 ```
 
 ---
 
-## Prerequisites
+## Demo Flow
 
-- Python 3.10 – 3.13
-- Node.js v20 LTS or higher (required for the MongoDB MCP server)
-- A MongoDB Atlas account with a free M0 cluster
-- A Google AI Studio API key (free at aistudio.google.com)
-- Google Cloud SDK (for deployment)
+For a strong live demo, open the hosted app and show:
+
+1. A full disruption analysis prompt
+2. A targeted SKU or supplier query
+3. The resulting mitigation plan written to MongoDB
+
+Good demo prompts:
+
+```text
+Run a full disruption analysis. Scan all active disruptions, identify affected SKUs, score risk levels, find backup suppliers with cost deltas, and save a mitigation plan.
+```
+
+```text
+Which SKUs are at critical or high risk right now?
+```
+
+```text
+What is the cost impact if we switch all affected SKUs to backup suppliers today?
+```
 
 ---
 
-## Local setup
+## Local Setup
 
-**1. Clone and create a virtual environment**
+### Prerequisites
+
+- Python 3.10 to 3.13
+- Node.js v20 or higher
+- MongoDB Atlas M0 cluster
+- Google AI Studio API key
+- Google Cloud SDK for deployment
+
+### Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/chainwatch-agent.git
-cd chainwatch-agent
+git clone https://github.com/mahaff/CHAINWATCH.git
+cd CHAINWATCH
 
 python -m venv venv
 
 # Windows
 venv\Scripts\activate
 
-# Mac / Linux
-source venv/bin/activate
-```
-
-**2. Install dependencies**
-
-```bash
 pip install "google-adk>=1.0.0,<2.0.0"
 pip install python-dotenv
 pip install "mcp[cli]"
@@ -95,11 +153,11 @@ pip install pywin32
 python -m pywin32_postinstall -install
 ```
 
-**3. Configure environment variables**
+### Environment Variables
 
 Create a `.env` file in the project root:
 
-```
+```env
 GOOGLE_API_KEY=your_api_key_from_aistudio
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 MDB_MCP_CONNECTION_STRING=mongodb+srv://agent-user:PASSWORD@cluster.mongodb.net/chainwatch
@@ -107,59 +165,43 @@ MDB_MCP_API_CLIENT_ID=your_atlas_service_account_client_id
 MDB_MCP_API_CLIENT_SECRET=your_atlas_service_account_client_secret
 ```
 
-**4. Run**
+### Run Locally
 
 ```bash
 adk web
 ```
 
-Open `http://127.0.0.1:8000`, select `chainwatch` from the agent dropdown.
+Open `http://127.0.0.1:8000` and select `chainwatch` from the agent dropdown.
 
 ---
 
-## MongoDB setup
+## MongoDB Collections
 
-The agent expects a database named `chainwatch` with five collections:
+The database is named `chainwatch` and uses these collections:
 
-- `suppliers` — supplier profiles, costs, lead times, reliability scores
-- `inventory` — SKU records, stock levels, reorder thresholds, supplier links
-- `disruptions` — active disruption events with severity and affected supplier IDs
-- `delivery_timelines` — live order tracking with delay information
-- `mitigation_plans` — written to by the agent, not manually
+- `suppliers`
+- `inventory`
+- `disruptions`
+- `delivery_timelines`
+- `mitigation_plans`
 
-Atlas setup requirements:
+The agent writes mitigation plans to `mitigation_plans` for auditability and review.
 
-- Create a database user with read/write access
-- Whitelist your IP under Network Access
-- For Cloud Run, also whitelist `0.0.0.0/0` (remove after the project)
-- Create a service account under Organization > Access Manager for the Atlas API tools
+### Database Notes for Judges
 
----
+- `suppliers` stores supplier profiles, lead times, reliability, and unit costs.
+- `inventory` stores SKU stock, reorder thresholds, supplier links, and risk status.
+- `disruptions` stores active events that trigger the analysis pipeline.
+- `delivery_timelines` stores in-flight order and delay tracking.
+- `mitigation_plans` stores the agent-generated output for human review.
 
-## Example prompts
-
-Full pipeline analysis:
-```
-Run a full disruption analysis. Scan all active disruptions, identify affected SKUs, 
-score risk levels, find backup suppliers with cost deltas, and save a mitigation plan.
-```
-
-Targeted queries:
-```
-Which SKUs are at critical or high risk right now?
-
-What is the cost impact if we switch all affected SKUs to backup suppliers today?
-
-Which single supplier, if offline, would cause the most damage to our inventory?
-
-How many days of stock remain for each low-stock SKU given current monthly demand?
-```
+The live agent reads and writes through MongoDB MCP at runtime, so the database is not just documentation. It is part of the working demo.
 
 ---
 
 ## Deployment
 
-Deploy to Google Cloud Run with one command:
+Deploy to Google Cloud Run:
 
 ```bash
 adk deploy cloud_run \
@@ -170,7 +212,7 @@ adk deploy cloud_run \
   --with_ui
 ```
 
-Then inject secrets:
+Then set secrets on the Cloud Run service:
 
 ```bash
 gcloud run services update SERVICE_NAME \
@@ -180,13 +222,11 @@ gcloud run services update SERVICE_NAME \
 
 ---
 
-## Known issues
+## Security Notes
 
-**429 RESOURCE_EXHAUSTED** — Gemini 2.5 Pro has zero free-tier quota. The agent uses `gemini-2.5-flash`. If you see this error, confirm the model string in `agent.py` and that `GOOGLE_GENAI_USE_VERTEXAI=FALSE` is set.
-
-**No module named 'pywintypes'** — Windows-only. Run `pip install pywin32` followed by `python -m pywin32_postinstall -install`.
-
-**MCP server not connecting** — The `.env` file is not auto-loaded by `npx`. Credentials must be passed via the `env` dict in `StdioServerParameters`, which the agent code handles. Confirm your connection string includes the database name.
+- `.env` is ignored by Git and should never be committed.
+- Local virtual environments and `google-cloud-sdk/` are ignored too.
+- The Cloud Run service should receive secrets only through environment variables.
 
 ---
 
