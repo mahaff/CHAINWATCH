@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chainwatch-agent"
+version = "0.1.0"
+description = "CHAINWATCH supply chain disruption intelligence agent"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "google-adk>=1.0.0",
+  "mcp>=1.0.0",
+  "python-dotenv>=1.0.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["chainwatch*"]

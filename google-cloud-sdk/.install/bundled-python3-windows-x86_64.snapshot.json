@@ -1,0 +1,44 @@
+{
+  "components": [
+    {
+      "data": {
+        "contents_checksum": "0b369522fe69d7c12f178e1ed3b15f6dd15e8fa94d05f1be10c96e75930f81f4",
+        "source": "",
+        "type": "tar"
+      },
+      "dependencies": [
+        "bundled-python3",
+        "core"
+      ],
+      "details": {
+        "description": "Provides stand-alone Python 3.14 install.",
+        "display_name": "Bundled Python 3.14 (Platform Specific)"
+      },
+      "gdu_only": false,
+      "id": "bundled-python3-windows-x86_64",
+      "is_configuration": false,
+      "is_hidden": true,
+      "is_required": false,
+      "platform": {
+        "architectures": [
+          "x86_64"
+        ],
+        "operating_systems": [
+          "WINDOWS"
+        ]
+      },
+      "platform_required": false,
+      "version": {
+        "build_number": 20260605120704,
+        "version_string": "3.14.4"
+      }
+    }
+  ],
+  "revision": 20260605120704,
+  "schema_version": {
+    "no_update": false,
+    "url": "https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz",
+    "version": 3
+  },
+  "version": "572.0.0"
+}
